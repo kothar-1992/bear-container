@@ -21,10 +21,37 @@ android {
                     properties = new Properties()
                     properties.load(propertiesFile.newDataInputStream())
 
-                    storeFile file(properties['storeFile'])
-                    storePassword properties['storePassword']
-                    keyAlias properties['keyAlias']
-                    keyPassword properties['keyPassword']
+                    // Validate properties before using them
+                    def storeFilePath = properties['storeFile']
+                    def storePass = properties['storePassword']
+                    def keyAliasName = properties['keyAlias']
+                    def keyPass = properties['keyPassword']
+
+                    if (storeFilePath && storePass && keyAliasName && keyPass) {
+                        def keystoreFile = file(storeFilePath)
+                        if (keystoreFile.exists()) {
+                            println "✅ Using keystore: ${storeFilePath}"
+                            storeFile keystoreFile
+                            storePassword storePass
+                            keyAlias keyAliasName
+                            keyPassword keyPass
+                        } else {
+                            println "❌ ERROR: Keystore file not found: ${storeFilePath}"
+                            println "Falling back to debug keystore"
+                            storeFile file("${System.getProperty('user.home')}/.android/debug.keystore")
+                            storePassword "android"
+                            keyAlias "androiddebugkey"
+                            keyPassword "android"
+                        }
+                    } else {
+                        println "❌ ERROR: Missing required properties in signing.properties"
+                        println "Required: storeFile, storePassword, keyAlias, keyPassword"
+                        println "Falling back to debug keystore"
+                        storeFile file("${System.getProperty('user.home')}/.android/debug.keystore")
+                        storePassword "android"
+                        keyAlias "androiddebugkey"
+                        keyPassword "android"
+                    }
                 } else {
                     // Fallback to debug keystore for local development
                     println "WARNING: No signing.properties found, using debug keystore"

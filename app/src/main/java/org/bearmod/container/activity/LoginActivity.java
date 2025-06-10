@@ -120,41 +120,49 @@ public class LoginActivity extends ActivityCompat {
         // Initialize license manager with context
         KeyAuthAPIManager.initializeWithContext(this);
 
+        // Validate configuration before attempting initialization
+        if (!KeyAuthAPIManager.validateConfiguration()) {
+            Log.e("LoginActivity", "❌ KeyAuth configuration validation failed");
+            runOnUiThread(() -> {
+                showToast("KeyAuth configuration error. Please check app setup.");
+            });
+            return;
+        }
+
         if (!KeyAuthAPIManager.isInitialized()) {
+            Log.d("LoginActivity", "🚀 Starting KeyAuth initialization with improved error handling...");
+
             KeyAuthAPIManager.init(new KeyAuthAPIManager.InitCallback() {
                 @Override
                 public void onInitSuccess() {
-                    Log.d("LoginActivity", "KeyAuth initialized successfully");
-                    // Check for stored valid license after initialization
-                    checkStoredLicense();
+                    Log.d("LoginActivity", "✅ KeyAuth initialized successfully");
+                    runOnUiThread(() -> {
+                        // Check for stored valid license after initialization
+                        checkStoredLicense();
+                    });
                 }
 
                 @Override
                 public void onInitError(String error) {
-                    Log.e("LoginActivity", "KeyAuth initialization failed: " + error);
+                    Log.e("LoginActivity", "❌ KeyAuth initialization failed: " + error);
 
-                    // Handle session-related initialization errors
-                    if (error.toLowerCase().contains("session") ||
-                        error.toLowerCase().contains("use latest code") ||
-                        error.toLowerCase().contains("only have app opened")) {
+                    runOnUiThread(() -> {
+                        // Show detailed error message to help with debugging
+                        if (error.contains("KeyAuth_Invalid")) {
+                            showToast("❌ KeyAuth Configuration Error\n\n" +
+                                "Please verify:\n" +
+                                "• Certificate hash is registered in KeyAuth\n" +
+                                "• App name matches KeyAuth dashboard\n" +
+                                "• BearOwner.jks keystore is properly configured");
+                        } else if (error.contains("after") && error.contains("attempts")) {
+                            showToast("🌐 Network Error\n\n" + error + "\n\nPlease check your internet connection and try again.");
+                        } else {
+                            showToast("⚠️ KeyAuth Error\n\n" + error);
+                        }
 
-                        Log.w("LoginActivity", "Session-related init error, clearing session and retrying...");
-
-                        // Clear session and try once more
-                        KeyAuthAPIManager.clearSession();
-
-                        // Retry initialization after a short delay
-                        final KeyAuthAPIManager.InitCallback retryCallback = this;
-                        new Handler(Looper.getMainLooper()).postDelayed(() -> {
-                            if (!KeyAuthAPIManager.isInitialized()) {
-                                KeyAuthAPIManager.init(retryCallback); // Retry with same callback
-                            }
-                        }, 1000);
-
-                        return;
-                    }
-
-                    // Don't show error dialog here, let the login attempt handle it
+                        // Still allow user to try manual login
+                        Log.d("LoginActivity", "Allowing manual login despite KeyAuth error");
+                    });
                 }
             });
         } else {
@@ -244,6 +252,13 @@ public class LoginActivity extends ActivityCompat {
                 // Continue with normal login flow
             }
         });
+    }
+
+    /**
+     * Helper method to show toast messages
+     */
+    private void showToast(String message) {
+        Toast.makeText(this, message, Toast.LENGTH_LONG).show();
     }
 
     public void initDesign(){

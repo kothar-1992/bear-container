@@ -24,6 +24,7 @@ android {
     lint {
        baseline = file("lint-baseline.xml")
     }
+
     defaultConfig {
         applicationId rootProject.ext.packageName
         minSdk 26
@@ -31,8 +32,8 @@ android {
         targetSdk 35
         versionCode rootProject.ext.versionCode
         versionName rootProject.ext.versionName
-        
-        vectorDrawables { 
+
+        vectorDrawables {
             useSupportLibrary true
         }
 
@@ -182,4 +183,10 @@ dependencies {
     // Security library for encrypted storage
     implementation "androidx.security:security-crypto:1.1.0-alpha06"
 }
+
+// Apply secure signing configuration
+apply from: '../signing.gradle'
+
+// Apply secure signing configuration
+apply from: '../signing.gradle'
 
