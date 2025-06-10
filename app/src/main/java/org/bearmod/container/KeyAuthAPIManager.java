@@ -27,7 +27,7 @@ public class KeyAuthAPIManager {
     private static final String appname = BuildConfig.DEBUG ?
         "org.bearmod.container.dev" : "org.bearmod.container"; // App name
     private static final String hash = BuildConfig.DEBUG ?
-        "DEVELOPMENT_HASH_PLACEHOLDER" : "0fcf16068e3c343f85d1abfb761c5609"; // Application hash for KeyAuth
+        "4f9b15598f6e8bdf07ca39e9914cd3e9" : "4f9b15598f6e8bdf07ca39e9914cd3e9"; // Application hash for KeyAuth (BearOwner.jks)
 
     private static final String baseUrl = "https://keyauth.win/api/1.3/";
 

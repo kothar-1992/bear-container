@@ -1,0 +1,31 @@
+# Signing Configuration Template for Bear-Container
+# Copy this file to 'signing.properties' and fill in your actual keystore details
+# NEVER commit signing.properties to version control - it's already in .gitignore
+
+# Your Personal Keystore Configuration
+# Your BearOwner keystore is located at: C:\Users\BearOwner\BearOwner.jks
+# Replace the password values with your actual keystore credentials:
+
+storeFile=C:\\Users\\BearOwner\\BearOwner.jks
+storePassword=your_keystore_password
+keyAlias=BearOwner
+keyPassword=your_alias_password
+
+# Example with your keystore:
+# storeFile=C:\\Users\\BearOwner\\BearOwner.jks
+# storePassword=YourActualKeystorePassword
+# keyAlias=BearOwner
+# keyPassword=YourActualAliasPassword
+
+# Notes:
+# 1. Create your own keystore using Android Studio or keytool
+# 2. Store the keystore file outside the project directory for security
+# 3. Use strong passwords for both keystore and key alias
+# 4. Keep backup copies of your keystore in a secure location
+# 5. The KeyAuth hash should match this keystore's certificate
+
+# To generate a new keystore:
+# keytool -genkey -v -keystore BearOwner.jks -keyalg RSA -keysize 2048 -validity 10000 -alias BearOwner
+
+# To get the certificate hash for KeyAuth:
+# keytool -list -v -keystore BearOwner.jks -alias BearOwner
