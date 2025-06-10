@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<lint>
+    <!-- Disable warnings that are acceptable for this project type -->
+    
+    <!-- DefaultLocale: Gaming apps often need specific formatting -->
+    <issue id="DefaultLocale" severity="warning" />
+    
+    <!-- InlinedApi: We handle API level checks appropriately -->
+    <issue id="InlinedApi" severity="warning" />
+    
+    <!-- InternalInsetResource: Legacy code that works correctly -->
+    <issue id="InternalInsetResource" severity="warning" />
+    
+    <!-- ScrollViewSize: Layout warnings that don't affect functionality -->
+    <issue id="ScrollViewSize" severity="warning" />
+    
+    <!-- SuspiciousIndentation: Code style issues -->
+    <issue id="SuspiciousIndentation" severity="warning" />
+    
+    <!-- UnusedAttribute: Attributes for newer APIs -->
+    <issue id="UnusedAttribute" severity="warning" />
+    
+    <!-- AppBundleLocaleChanges: App bundle configuration -->
+    <issue id="AppBundleLocaleChanges" severity="warning" />
+    
+    <!-- CustomSplashScreen: Legacy splash screen implementation -->
+    <issue id="CustomSplashScreen" severity="warning" />
+    
+    <!-- InflateParams: Floating window implementations -->
+    <issue id="InflateParams" severity="warning" />
+    
+    <!-- NonConstantResourceId: Switch statements with resource IDs -->
+    <issue id="NonConstantResourceId" severity="warning" />
+    
+    <!-- SelectedPhotoAccess: Third-party library permissions -->
+    <issue id="SelectedPhotoAccess" severity="warning" />
+    
+    <!-- UseSwitchCompatOrMaterialCode: Legacy switch implementations -->
+    <issue id="UseSwitchCompatOrMaterialCode" severity="warning" />
+    
+    <!-- UseSwitchCompatOrMaterialXml: Legacy switch implementations -->
+    <issue id="UseSwitchCompatOrMaterialXml" severity="warning" />
+    
+    <!-- AndroidGradlePluginVersion: We're using a specific version for compatibility -->
+    <issue id="AndroidGradlePluginVersion" severity="warning" />
+    
+    <!-- InOrMmUsage: Text content, not actual measurements -->
+    <issue id="InOrMmUsage" severity="warning" />
+    
+    <!-- LockedOrientationActivity: Gaming app requires portrait orientation -->
+    <issue id="LockedOrientationActivity" severity="warning" />
+    
+    <!-- NotConstructor: Native method naming convention -->
+    <issue id="NotConstructor" severity="warning" />
+    
+    <!-- PrivateResource: Third-party library resources -->
+    <issue id="PrivateResource" severity="warning" />
+</lint>

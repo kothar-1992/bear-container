@@ -1,0 +1,185 @@
+plugins {
+    id 'com.android.application'
+    id 'org.jetbrains.kotlin.android'
+    id 'org.jetbrains.kotlin.kapt'
+    id 'top.niunaijun.blackobfuscator'
+}
+
+apply from: '../signing.gradle'
+
+class Scrambler {
+    Random random = new Random()
+
+    String getRandomString(int i) {
+        return random.with {(1..(6 + random.nextInt(i))).collect {(('a'..'z')).join()[ nextInt((('a'..'z')).join().length())]}.join()}
+    }
+}
+
+Scrambler scrambler = new Scrambler()
+
+android {
+    namespace rootProject.ext.packageName
+    compileSdk 35
+    ndkVersion '27.1.12297006'
+    lint {
+       baseline = file("lint-baseline.xml")
+    }
+    defaultConfig {
+        applicationId rootProject.ext.packageName
+        minSdk 26
+        //noinspection OldTargetApi
+        targetSdk 35
+        versionCode rootProject.ext.versionCode
+        versionName rootProject.ext.versionName
+        
+        vectorDrawables { 
+            useSupportLibrary true
+        }
+
+        testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
+        externalNativeBuild {
+            cmake {
+                cppFlags ''
+            }
+        }
+        ndk {
+            //noinspection ChromeOsAbiSupport
+            abiFilters "arm64-v8a"
+        }
+
+        multiDexEnabled  false
+    }
+
+    buildTypes {
+        release {
+            minifyEnabled true
+            multiDexEnabled true
+            debuggable false
+            jniDebuggable false
+            shrinkResources true
+            zipAlignEnabled true
+            signingConfig signingConfigs.release
+            proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
+            manifestPlaceholders = [randomName: "BEAR LOADER"]
+        }
+        debug {
+            minifyEnabled false
+            shrinkResources false
+            multiDexEnabled false
+            debuggable true
+            jniDebuggable true
+            zipAlignEnabled false
+            signingConfig signingConfigs.debug
+            manifestPlaceholders = [randomName: "BEAR LOADER"]
+            proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
+        }
+    }
+
+    applicationVariants.configureEach { variant ->
+        variant.outputs.configureEach { output ->
+            outputFileName = "${applicationId}" + "-" + variant.buildType.name + "-" + (new Date()).format('yyyyMMddHHmmss') + ".apk"
+
+            // Copy mapping files for minified builds
+            if (variant.buildType.minifyEnabled) {
+                variant.getAssembleProvider().configure() {
+                    it.doLast {
+                        copy {
+                            from "build/outputs/mapping/${variant.buildType.name}"
+                            into 'proguard'
+                            include '**/mapping.txt'
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_17
+        targetCompatibility JavaVersion.VERSION_17
+    }
+
+    kotlinOptions {
+        jvmTarget = '17'
+        freeCompilerArgs += [
+                '-opt-in=kotlin.RequiresOptIn',
+        ]
+    }
+    
+    buildFeatures {
+        viewBinding true
+        buildConfig true
+    }
+    externalNativeBuild {
+        ndkBuild {
+            path file('src/main/jni/Android.mk')
+        }
+        /*cmake {
+            path file('src/main/cpp/CMakeLists.txt')
+            version '3.25.1'
+        }*/
+    }
+}
+
+BlackObfuscator {
+    // 是否启用
+    enabled true
+    // 混淆深度
+    depth 2
+    obfClass = [
+            "org.bearmod.container.activity",
+            "org.bearmod.container.Component",
+            "org.bearmod.container.floating.FloatAim",
+            "org.bearmod.container.floating.ToggleAim",
+            "org.bearmod.container.floating.ToggleBullet",
+            "org.bearmod.container.floating.ToggleSimulation",
+            "org.bearmod.container.floating.Overlay",
+    ]
+}
+
+// Configuration cache compatibility for BlackObfuscator
+tasks.withType(com.android.build.gradle.internal.tasks.DexMergingTask).configureEach {
+    notCompatibleWithConfigurationCache("BlackObfuscator modifies Dex merging dynamically")
+}
+
+// Additional task configuration for BlackObfuscator compatibility
+tasks.configureEach {
+    if (name.contains("mergeDex") || name.contains("minifyWithR8")) {
+        notCompatibleWithConfigurationCache("BlackObfuscator plugin modifies tasks dynamically")
+    }
+}
+
+repositories {
+    google()
+    mavenCentral()
+    maven { url 'https://jitpack.io' }
+    maven { url 'https://maven.google.com' }
+}
+
+dependencies {
+    implementation fileTree(dir: "libs", include: ["*.jar", "*.aar"])
+    implementation("androidx.multidex:multidex:2.0.1")
+    implementation("androidx.appcompat:appcompat:1.7.1")
+    implementation("com.google.android.material:material:1.12.0")
+    //noinspection Aligned16KB
+    implementation "com.tencent:mmkv-static:2.2.2"
+    implementation 'org.jdeferred:jdeferred-android-aar:1.2.6'
+    implementation "org.jetbrains.kotlin:kotlin-stdlib:2.1.21"
+    implementation 'io.github.molihuan:pathselector:1.1.16'
+    def lottieVersion = '6.6.6'
+    //noinspection GradleDependency
+    implementation "com.airbnb.android:lottie:$lottieVersion"
+    implementation "com.github.topjohnwu.libsu:core:3.1.1"
+    implementation "androidx.cardview:cardview:1.0.0"
+    implementation 'com.blankj:utilcodex:1.31.1'
+    implementation 'net.lingala.zip4j:zip4j:2.11.5'
+    implementation("com.github.bumptech.glide:glide:4.16.0")
+    implementation 'com.github.techinessoverloaded:progress-dialog:1.5.1'
+    implementation 'com.android.volley:volley:1.2.1'
+    implementation 'com.github.skydoves:powerspinner:1.2.7'
+
+    // Security library for encrypted storage
+    implementation "androidx.security:security-crypto:1.1.0-alpha06"
+}
+
